@@ -4,17 +4,17 @@ FROM python:${PYTHON_VERSION} as python
 
 
 FROM python as python-build-stage
-
 ARG BUILD_ENVIRONMENT=local
 
-RUN upt-get update && apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
     build-essential \
-    libpd-dev
+    libpq-dev
 
 COPY ./requirements .
 
 RUN pip wheel --wheel-dir /usr/src/app/wheels \
-    -r ${BUILD_ENVIRONMENT}.txt
+  -r ${BUILD_ENVIRONMENT}.txt
+
 
 FROM python as python-run-stage
 ARG BUILD_ENVIRONMENT=local
@@ -29,28 +29,27 @@ ENV BUILD_ENV ${BUILD_ENVIRONMENT}
 
 WORKDIR ${APP_HOME}
 
-
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    libpd-dev \
-    gettext \
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-    && rm -rf /var/lib/apt/lists/*
+  libpq-dev \
+  gettext \
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && rm -rf /var/lib/apt/lists/*
 
 
 COPY --from=python-build-stage /usr/src/app/wheels /wheels/
 
 RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
-    && rm -rf /wheels/
+  && rm -rf /wheels/
 
-COPY ./docker/local//django/entrypoint /entrypoint
+COPY ./docker/local/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
 
-COPY ./docker/local//django/start /start
+COPY ./docker/local/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
-COPY . ${APP_HOME}
 
+COPY . ${APP_HOME}
 
 ENTRYPOINT [ "/entrypoint" ]

@@ -9,6 +9,6 @@ SECRET_KEY = env("DJANGO_SECRET_KEY", default="adXu-Vlv76ko2ecdbZcMvn8U-MvKT_1ko
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['8000-vinneyj-hivementum-pjdqu7d365f.ws-eu101.gitpod.io']
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:8080"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:8080", "http://8000-vinneyj-hivementum-pjdqu7d365f.ws-eu101.gitpod.io/"]
